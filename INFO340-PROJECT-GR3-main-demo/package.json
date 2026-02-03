@@ -1,5 +1,5 @@
 {
-  "name": "info340-project-gr3",
+  "name": "dubloo-2026",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -12,15 +12,15 @@
   "dependencies": {
     "@react-google-maps/api": "^2.20.6",
     "firebase": "^11.9.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-router-dom": "^7.6.1",
     "react-toastify": "^11.0.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
-    "@types/react": "^19.1.2",
-    "@types/react-dom": "^19.1.2",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
     "@vitejs/plugin-react": "^4.4.1",
     "eslint": "^9.25.0",
     "eslint-plugin-react-hooks": "^5.2.0",

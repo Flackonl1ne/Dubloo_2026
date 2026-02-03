@@ -1,8 +1,9 @@
-// Updated Rate.jsx with Firebase review submission
+// Updated Rate.jsx (Demo mode: localStorage review submission)
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router';
+import { useParams, useNavigate } from 'react-router-dom';
 import './index.css';
 import { getDemoUser, saveReview } from './demoStore';
+
 function Rate({ user }) {
   const { restroomId } = useParams();
   const navigate = useNavigate();
@@ -32,18 +33,23 @@ function Rate({ user }) {
       setRestroomName(decodeURIComponent(restroomId));
     }
   }, [restroomId]);
-// Based on the rating category clicked by the user, save the corresponding rating value to the corresponding React.
+
+  // Based on the rating category clicked by the user, save the corresponding rating value
   const handleStarClick = (category, rating) => {
     switch (category) {
-      case 'overall': setOverallScore(rating.toString()); 
+      case 'overall':
+        setOverallScore(rating.toString());
         break;
-      case 'cleanliness': setCleanlinessScore(rating.toString()); 
+      case 'cleanliness':
+        setCleanlinessScore(rating.toString());
         break;
-      case 'facility': setFacilityScore(rating.toString()); 
+      case 'facility':
+        setFacilityScore(rating.toString());
         break;
-      case 'odor': setOdorScore(rating.toString()); 
+      case 'odor':
+        setOdorScore(rating.toString());
         break;
-      default: 
+      default:
         break;
     }
   };
@@ -55,7 +61,7 @@ function Rate({ user }) {
   const handleStarLeave = (category) => {
     setHoverRating(prev => ({ ...prev, [category]: 0 }));
   };
-  // Use AI to fully utilize the star component
+
   const renderStarRating = (category, value) => {
     const rating = hoverRating[category] || parseInt(value) || 0;
     return (
@@ -75,7 +81,6 @@ function Rate({ user }) {
     );
   };
 
-  // Using AI to increase error feedback
   const validateRatings = () => {
     if (!overallScore || !cleanlinessScore || !facilityScore || !odorScore) {
       setErrorMsg('Please provide all ratings');
@@ -88,54 +93,44 @@ function Rate({ user }) {
     return true;
   };
 
-  // Use AI debug, it gives me a more detailed method
   const handleSubmit = (e) => {
-  e.preventDefault();
-  if (!validateRatings()) return;
-  setIsSubmitting(true);
-  setErrorMsg('');
+    e.preventDefault();
+    if (!validateRatings()) return;
 
-  const u = getDemoUser(user);
+    setIsSubmitting(true);
+    setErrorMsg('');
 
-  const reviewData = {
-    id: `r_${Date.now()}`,
-    userId: u.email,
-    username: u.username,
-    restroom: restroomName,
-    cleanliness: Number(cleanlinessScore),
-    odor: Number(odorScore),
-    facility: Number(facilityScore),
-    overall: Number(overallScore),
-    comment,
-    amenities: { hasPaper, hasSoap, isAccessible, isGenderNeutral },
-    timestamp: new Date().toISOString()
-  };
+    try {
+      const u = getDemoUser(user);
 
-  try {
-    saveReview(reviewData);
-    setIsSubmitting(false);
-    setSubmitted(true);
-    setTimeout(() => {
-      navigate(`/dashboard/${encodeURIComponent(restroomName)}`);
-    }, 800);
-  } catch (error) {
-    console.error(error);
-    setIsSubmitting(false);
-    setErrorMsg('Failed to submit in demo mode.');
-  }
-};
+      const reviewData = {
+        id: `r_${Date.now()}`,
+        userId: u.email || "guest@demo.local",
+        username: u.username || u.email || "Guest",
+        restroom: restroomName,
+        cleanliness: Number(cleanlinessScore),
+        odor: Number(odorScore),
+        facility: Number(facilityScore),
+        overall: Number(overallScore),
+        comment,
+        amenities: { hasPaper, hasSoap, isAccessible, isGenderNeutral },
+        timestamp: new Date().toISOString()
+      };
 
-    push(reviewsRef, reviewData).then(() => {
+      // Demo mode: save to localStorage
+      saveReview(reviewData);
+
       setIsSubmitting(false);
       setSubmitted(true);
+
       setTimeout(() => {
         navigate(`/dashboard/${encodeURIComponent(restroomName)}`);
-      }, 2000);
-    }).catch((error) => {
+      }, 800);
+    } catch (error) {
       console.error(error);
-      setErrorMsg('Failed to submit review.');
       setIsSubmitting(false);
-    });
+      setErrorMsg('Failed to submit in demo mode.');
+    }
   };
 
   if (submitted) {
@@ -149,7 +144,6 @@ function Rate({ user }) {
     );
   }
 
-// AI is also used here to optimize the program. 
   return (
     <div className="rate-container">
       <div className="rate-header">
@@ -188,12 +182,42 @@ function Rate({ user }) {
 
         <div className="amenities-section">
           <h3>Amenities & Features</h3>
-          {/*//Used AI to learn how to create React state flows clearly.*/}
           <div className="checkbox-group">
-            <label><input type="checkbox" checked={hasPaper} onChange={(e) => setHasPaper(e.target.checked)} /> Has Toilet Paper</label>
-            <label><input type="checkbox" checked={hasSoap} onChange={(e) => setHasSoap(e.target.checked)} /> Has Soap</label>
-            <label><input type="checkbox" checked={isAccessible} onChange={(e) => setIsAccessible(e.target.checked)} /> Wheelchair Accessible</label>
-            <label><input type="checkbox" checked={isGenderNeutral} onChange={(e) => setIsGenderNeutral(e.target.checked)} /> Gender Neutral</label>
+            <label>
+              <input
+                type="checkbox"
+                checked={hasPaper}
+                onChange={(e) => setHasPaper(e.target.checked)}
+              />
+              {' '}Has Toilet Paper
+            </label>
+
+            <label>
+              <input
+                type="checkbox"
+                checked={hasSoap}
+                onChange={(e) => setHasSoap(e.target.checked)}
+              />
+              {' '}Has Soap
+            </label>
+
+            <label>
+              <input
+                type="checkbox"
+                checked={isAccessible}
+                onChange={(e) => setIsAccessible(e.target.checked)}
+              />
+              {' '}Wheelchair Accessible
+            </label>
+
+            <label>
+              <input
+                type="checkbox"
+                checked={isGenderNeutral}
+                onChange={(e) => setIsGenderNeutral(e.target.checked)}
+              />
+              {' '}Gender Neutral
+            </label>
           </div>
         </div>
 
@@ -205,12 +229,23 @@ function Rate({ user }) {
             onChange={(e) => setComment(e.target.value)}
             placeholder="Share your experience..."
             rows="4"
-          ></textarea>
+          />
         </div>
 
         <div className="form-actions">
-          <button type="button" className="cancel-button" onClick={() => navigate(-1)}>Cancel</button>
-          <button type="submit" className="submit-button" disabled={isSubmitting}>
+          <button
+            type="button"
+            className="cancel-button"
+            onClick={() => navigate(-1)}
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            className="submit-button"
+            disabled={isSubmitting}
+          >
             {isSubmitting ? 'Submitting...' : 'Submit Review'}
           </button>
         </div>

@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, Link } from 'react-router';
+import { useParams, Link } from 'react-router-dom';
 import RestroomPost from './RestroomPost';
 import './index.css';
 import { toast } from 'react-toastify';
 import { getDemoUser, loadPosts, savePost } from './demoStore';
 import { like } from './Like';
+
 // Static definition of image paths for each bathroom
 const restroomImages = {
   "Mary Gates Hall": "/img/marygates.jpeg",
@@ -29,43 +30,42 @@ export default function Dashboard({ user }) {
   const [newPost, setNewPost] = useState('');
   const [posts, setPosts] = useState([]);
 
+  // Format timestamps to display as “just now” or “a few minutes ago,” etc.
+  const formatTimestamp = (timestamp) => {
+    if (!timestamp) return "Just now";
+    const now = new Date();
+    const postTime = new Date(timestamp);
+    const diffInMinutes = Math.floor((now - postTime) / (1000 * 60));
+    if (diffInMinutes < 1) return "Just now";
+    if (diffInMinutes < 60) return `${diffInMinutes} minutes ago`;
+    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)} hours ago`;
+    return `${Math.floor(diffInMinutes / 1440)} days ago`;
+  };
+
   useEffect(() => {
     if (restroomId) {
       setRestroom(decodeURIComponent(restroomId));
     }
   }, [restroomId]);
 
-// Get comment data from Firebase and filter by restroom
-// These lines from the AI
+  // Demo mode: load posts from localStorage and filter by restroom
   useEffect(() => {
-  // Demo mode: load posts from localStorage
-  const all = loadPosts();
+    const all = loadPosts();
 
-  const postsArray = all
-    .map(p => ({
-      ...p,
-      timestamp: formatTimestamp(p.timestamp)
-    }))
-    .sort((a, b) => new Date(b.rawTimestamp || b.timestamp) - new Date(a.rawTimestamp || a.timestamp))
-    .filter(post => post.restroom === restroom);
+    const postsArray = all
+      .map((p) => {
+        const raw = p.rawTimestamp || p.timestamp;
+        return {
+          ...p,
+          rawTimestamp: raw,
+          timestamp: formatTimestamp(raw)
+        };
+      })
+      .sort((a, b) => new Date(b.rawTimestamp) - new Date(a.rawTimestamp))
+      .filter((post) => post.restroom === restroom);
 
-  setPosts(postsArray);
-}, [restroom]);
-
-// Format timestamps to display as “just now” or “a few minutes ago,” etc.
-  const formatTimestamp = (timestamp) => {
-    if (!timestamp) return "Just now";
-    const now = new Date();
-    const postTime = new Date(timestamp);
-    const diffInMinutes = Math.floor((now - postTime) / (1000 * 60));
-    if (diffInMinutes < 1) 
-      return "Just now";
-    if (diffInMinutes < 60) 
-      return `${diffInMinutes} minutes ago`;
-    if (diffInMinutes < 1440) 
-      return `${Math.floor(diffInMinutes / 60)} hours ago`;
-    return `${Math.floor(diffInMinutes / 1440)} days ago`;
-  };
+    setPosts(postsArray);
+  }, [restroom]);
 
   useEffect(() => {
     if (postsContainerRef.current) {
@@ -73,28 +73,36 @@ export default function Dashboard({ user }) {
     }
   }, [posts]);
 
-   // Handle new comments
+  // Handle new comments
   async function handleAddPost(e) {
     e.preventDefault();
     if (!newPost.trim()) return;
 
-    const u = getDemoUser(user);
+    try {
+      const u = getDemoUser(user);
 
-    const newPostData = {
-      content: newPost.trim(),
-      author: u.username || u.email || "Guest",
-      authorId: u.email || "guest@demo.local",
-      timestamp: new Date().toISOString(),
-      floor: currentFloor,
-      restroom: restroom
-    };
+      const newPostData = {
+        content: newPost.trim(),
+        author: u.username || u.email || "Guest",
+        authorId: u.email || "guest@demo.local",
+        timestamp: new Date().toISOString(),
+        floor: currentFloor,
+        restroom: restroom
+      };
 
-    // There used to be bugs here, but AI helped me debug the method it created.
-    savePost({ ...newPostData, id: `p_${Date.now()}`, rawTimestamp: newPostData.timestamp });
+      // Save to localStorage (demo)
+      const saved = {
+        ...newPostData,
+        id: `p_${Date.now()}`,
+        rawTimestamp: newPostData.timestamp
+      };
+      savePost(saved);
 
+      // Update UI immediately
       const localPost = {
         ...newPostData,
-        id: Date.now(),
+        id: saved.id,
+        rawTimestamp: newPostData.timestamp,
         timestamp: "Just now"
       };
 
@@ -109,7 +117,7 @@ export default function Dashboard({ user }) {
     }
   }
 
-  const filtered = posts.filter(p => p.floor === currentFloor);
+  const filtered = posts.filter((p) => p.floor === currentFloor);
 
   const getBuildingName = (restroomTitle) => {
     for (const buildingName of Object.keys(restroomImages)) {
@@ -127,7 +135,7 @@ export default function Dashboard({ user }) {
       <div className="forum-container">
         <div className="posts-container" ref={postsContainerRef}>
           {filtered.length
-            ? filtered.map(p => (
+            ? filtered.map((p) => (
               <RestroomPost
                 key={p.id}
                 content={p.content}
@@ -147,11 +155,17 @@ export default function Dashboard({ user }) {
                 placeholder="Write your post here..."
                 rows={4}
                 value={newPost}
-                onChange={e => setNewPost(e.target.value)}
+                onChange={(e) => setNewPost(e.target.value)}
               />
               <div className="post-buttons">
                 <button type="submit" className="submit-post">Submit</button>
-                <button type="button" className="cancel-post" onClick={() => setShowAddPost(false)}>Cancel</button>
+                <button
+                  type="button"
+                  className="cancel-post"
+                  onClick={() => setShowAddPost(false)}
+                >
+                  Cancel
+                </button>
               </div>
             </form>
           </div>
@@ -181,7 +195,7 @@ export default function Dashboard({ user }) {
         <h2 className="place-header">{restroom}</h2>
 
         <nav className="tabs">
-          {["1", "2", "3"].map(floor => (
+          {["1", "2", "3"].map((floor) => (
             <button
               key={floor}
               className={currentFloor === floor ? 'active' : ''}
@@ -191,6 +205,7 @@ export default function Dashboard({ user }) {
             </button>
           ))}
         </nav>
+
         <div className="rating-group">
           {[
             ["Overall Rating", "★★★★☆"],
@@ -210,9 +225,11 @@ export default function Dashboard({ user }) {
           <p><span className="icon">⏰</span><span className="status open">Open</span> · Closes 10 PM</p>
           <p className="update-note">Updated by this business 9 weeks ago</p>
         </div>
+
         <Link to={`/rate/${encodeURIComponent(restroom)}`} className="suggest-edit">
           Rate
         </Link>
+
         <button
           className="like-btn"
           onClick={() =>
