@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dubloo - UW Toilets Map</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <nav class="navbar">
+      <h1 class="logo">Dubloo</h1>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="ranking.html">Ranking</a></li>
+        <li><a href="signup.html">Log in</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="about-container">
+    <h2>Welcome to Dubloo</h2>
+    <p>Dubloo is a web application designed to improve restroom accessibility, cleanliness, and transparency at the University of Washington. Through crowdsourced reviews and community engagement, we aim to provide real-time, detailed insights into restroom conditions across campus buildings.</p>
+  </div>
+
+  <div class="content-wrapper">
+    <div class="grid">
+      <div class="card">
+        <h3>🎯 Our Purpose</h3>
+        <p>UW’s current campus restroom information is limited to static maps, which lack insight into real-time conditions. Dubloo fills this gap by empowering users to rate, review, and contribute new data about the restrooms they use—making restroom visits cleaner, more informed, and inclusive.</p>
+      </div>
+      <div class="card">
+        <h3>⭐ Rating & Reviewing Restrooms</h3>
+        <p>Dubloo allows users to evaluate restrooms on a deeper level than a basic star system. Categories like cleanliness, availability of supplies, wait time, and overall comfort help paint a more accurate and actionable picture of restroom quality—benefitting every user looking for a dependable facility.</p>
+      </div>
+    </div>
+
+    <div class="map-container">
+      <div id="map"></div>
+    </div>
+  </div>
+
+
+  <script src="js/home.js"></script>
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA3iXizyArWBcUzJSif9hVrw1hxGdTp3ew&callback=initMap&loading=async">
+  </script>
+
+  </body>
+</html>

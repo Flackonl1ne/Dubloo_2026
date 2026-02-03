@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile - Dubloo</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <header>
+    <nav class="navbar">
+      <h1 class="logo">Dubloo</h1>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="ranking.html">Ranking</a></li>
+        <li><a href="profile.html" class="active">Profile</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="profile-container ">
+    <section class="hero">
+      <h2>My Profile</h2>
+      <p>Manage your restroom reviews, favorites, and personal details here.</p>
+    </section>
+
+    <section class="profile-grid">
+      <div class="profile-card">
+        <h3>👤 User Information</h3>
+        <div class="profile-picture">
+          <img src="img/default-profile.png" alt="Profile Picture" id="profileImage">
+          <form>
+            <label for="upload-pic">Upload New Picture:</label><br>
+            <input type="file" id="upload-pic" accept="image/*">
+          </form>
+        </div>
+        <p><strong>Username:</strong> husky_user123</p>
+        <p><strong>Email:</strong> husky123@uw.edu</p>
+        <p><strong>Member since:</strong> January 2025</p>
+      </div>
+
+      <div class="profile-card">
+        <h3>⭐ My Contributions</h3>
+        <ul>
+          <li>10 restroom reviews submitted</li>
+          <li>3 new restrooms added</li>
+          <li>5 restrooms favorited</li>
+        </ul>
+      </div>
+
+      <div class="profile-card">
+        <h3>⚙️ Settings</h3>
+        <p>Change your password, manage notifications, or delete your account.</p>
+        <button>Update Settings</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Dubloo &copy; 2025 – Built for INFO 340 at the University of Washington</p>
+  </footer>
+
+  <script>
+    const uploadPicInput = document.getElementById('upload-pic');
+    const profileImage = document.getElementById('profileImage');
+
+    uploadPicInput.addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          profileImage.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  </script>
+</body>
+</html>
